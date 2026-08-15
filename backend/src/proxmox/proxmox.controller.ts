@@ -1,4 +1,26 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Get, Post } from '@nestjs/common';
+import { ProxmoxApiService } from './proxmox-api.service';
+import { WolService } from './wol.service';
 
-@Controller('proxmox')
-export class ProxmoxController {}
+@Controller('server')
+export class ProxmoxController {
+  constructor(
+    private readonly proxmoxApi: ProxmoxApiService,
+    private readonly wol: WolService,
+  ) {}
+
+  @Get('status')
+  getStatus() {
+    return this.proxmoxApi.getStatus();
+  }
+
+  @Post('shutdown')
+  shutdown() {
+    return this.proxmoxApi.shutdown();
+  }
+
+  @Post('wake')
+  wake() {
+    return this.wol.wake();
+  }
+}
