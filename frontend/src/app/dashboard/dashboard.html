@@ -1,22 +1,14 @@
-<main class="min-h-screen bg-(--page) px-4 py-10 text-(--ink-primary)">
-  <div class="mx-auto max-w-5xl">
-    <header class="mb-6 flex items-center gap-3">
+<main class="min-h-screen bg-(--page) px-6 py-10 text-(--ink-primary) lg:px-12">
+  <div class="mx-auto max-w-[1600px]">
+    <header class="mb-6 flex items-center gap-4">
       <div
-        class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
-        style="background-color: rgba(227, 73, 72, 0.12)"
-        aria-hidden="true"
+        class="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl border border-(--border) bg-(--surface) p-2 shadow-sm"
       >
-        <!-- Raspberry Pi homage: a small berry cluster + leaf, not the trademarked logo -->
-        <svg viewBox="0 0 24 24" width="24" height="24">
-          <path d="M12 3.2c1.3-1.4 3.6-1.4 4.6-.1-1 .6-2 .7-3.1.2" fill="#008300" />
-          <circle cx="9.6" cy="9" r="2.5" fill="#e34948" />
-          <circle cx="14.4" cy="9" r="2.5" fill="#e34948" />
-          <circle cx="8" cy="13.2" r="2.5" fill="#e34948" />
-          <circle cx="12" cy="13.2" r="2.5" fill="#e34948" />
-          <circle cx="16" cy="13.2" r="2.5" fill="#e34948" />
-          <circle cx="9.6" cy="17.4" r="2.5" fill="#e34948" />
-          <circle cx="14.4" cy="17.4" r="2.5" fill="#e34948" />
-        </svg>
+        <img
+          src="raspberry-pi-logo.png"
+          alt="Raspberry Pi logo"
+          class="h-full w-full object-contain"
+        />
       </div>
       <div>
         <h1 class="text-2xl font-semibold">Proxmox Panel</h1>
@@ -45,7 +37,7 @@
         </h2>
 
         @if (status().online) {
-          <div class="grid gap-6 sm:grid-cols-2">
+          <div class="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
             <div class="flex items-start gap-3">
               <div
                 class="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
