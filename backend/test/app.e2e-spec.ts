@@ -7,6 +7,14 @@ import { AppModule } from './../src/app.module';
 describe('AppController (e2e)', () => {
   let app: INestApplication<App>;
 
+  beforeAll(() => {
+    process.env.PROXMOX_HOST = 'invalid.example';
+    process.env.PROXMOX_NODE = 'pve';
+    process.env.PROXMOX_TOKEN_ID = 'test@pam!test';
+    process.env.PROXMOX_TOKEN_SECRET = 'test';
+    process.env.WOL_MAC = 'AA:BB:CC:DD:EE:FF';
+  });
+
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
@@ -16,11 +24,14 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
-  it('/ (GET)', () => {
+  it('/server/status (GET)', () => {
     return request(app.getHttpServer())
-      .get('/')
+      .get('/server/status')
       .expect(200)
-      .expect('Hello World!');
+      .expect((res) => {
+        const body = res.body as { online: unknown };
+        expect(typeof body.online).toBe('boolean');
+      });
   });
 
   afterEach(async () => {

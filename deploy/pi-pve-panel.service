@@ -1,0 +1,19 @@
+[Unit]
+Description=Pi Proxmox Panel
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+# Replace with your actual Pi username (whoami)
+User=CHANGE_ME_USER
+# Replace with the output of: cd ~/pi-pve-panel/backend && pwd
+WorkingDirectory=CHANGE_ME_BACKEND_PATH
+# Replace with the output of: nvm use 22 && which node
+ExecStart=CHANGE_ME_NODE_PATH dist/main.js
+Restart=on-failure
+RestartSec=5
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target
