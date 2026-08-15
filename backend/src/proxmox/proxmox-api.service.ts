@@ -38,6 +38,7 @@ export class ProxmoxApiService {
   }
 
   async getStatus(): Promise<ProxmoxStatus> {
+    const startedAt = Date.now();
     try {
       const { data } = await this.client.get<ProxmoxNodeStatusResponse>(
         `/nodes/${this.node}/status`,
@@ -52,6 +53,7 @@ export class ProxmoxApiService {
         diskTotal: d.rootfs?.total,
         uptime: d.uptime,
         loadavg: d.loadavg?.map(Number),
+        latencyMs: Date.now() - startedAt,
       };
     } catch (err) {
       this.logger.debug(`Proxmox unreachable: ${(err as Error).message}`);

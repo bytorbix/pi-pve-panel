@@ -7,4 +7,5 @@ export interface ProxmoxStatus {
   diskTotal?: number;
   uptime?: number;
   loadavg?: number[];
+  latencyMs?: number;
 }

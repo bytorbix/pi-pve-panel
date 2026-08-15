@@ -1,18 +1,35 @@
 import { Component, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { interval, map, startWith } from 'rxjs';
 import { Proxmox } from '../proxmox';
+import { Meter } from '../meter/meter';
+
+interface ActivityEntry {
+  message: string;
+  time: string;
+}
 
 @Component({
   selector: 'app-dashboard',
-  imports: [],
+  imports: [Meter],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
 export class Dashboard {
   private readonly proxmox = inject(Proxmox);
 
+  private readonly now = toSignal(
+    interval(1000).pipe(
+      startWith(0),
+      map(() => Date.now()),
+    ),
+    { initialValue: Date.now() },
+  );
+
   readonly status = this.proxmox.status;
   readonly isBusy = this.proxmox.isBusy;
   readonly errorMessage = signal<string | null>(null);
+  readonly activity = signal<ActivityEntry[]>([]);
 
   readonly cpuPercent = computed(() => {
     const cpu = this.status().cpu;
@@ -53,12 +70,29 @@ export class Dashboard {
     return loadavg?.length ? loadavg.map((n) => n.toFixed(2)).join(' / ') : null;
   });
 
+  readonly latencyLabel = computed(() => {
+    const latencyMs = this.status().latencyMs;
+    return latencyMs === undefined ? null : `${latencyMs} ms`;
+  });
+
+  readonly lastCheckedLabel = computed(() => {
+    const last = this.proxmox.lastChecked();
+    if (!last) return null;
+    const seconds = Math.max(0, Math.floor((this.now() - last.getTime()) / 1000));
+    if (seconds < 5) return 'just now';
+    if (seconds < 60) return `${seconds}s ago`;
+    return `${Math.floor(seconds / 60)}m ago`;
+  });
+
   async wake(): Promise<void> {
     this.errorMessage.set(null);
+    this.logActivity('Wake-on-LAN packet requested');
     try {
       await this.proxmox.wake();
+      this.logActivity('Wake-on-LAN packet sent');
     } catch {
       this.errorMessage.set('Failed to send the wake-on-LAN packet.');
+      this.logActivity('Wake-on-LAN packet failed to send');
     }
   }
 
@@ -67,11 +101,23 @@ export class Dashboard {
       return;
     }
     this.errorMessage.set(null);
+    this.logActivity('Shutdown requested');
     try {
       await this.proxmox.shutdown();
+      this.logActivity('Shutdown command sent');
     } catch {
       this.errorMessage.set('Failed to reach Proxmox to shut it down.');
+      this.logActivity('Shutdown command failed');
     }
+  }
+
+  private logActivity(message: string): void {
+    const time = new Date().toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    });
+    this.activity.update((entries) => [{ message, time }, ...entries].slice(0, 5));
   }
 }
 

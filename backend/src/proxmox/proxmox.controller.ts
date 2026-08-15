@@ -1,4 +1,4 @@
-import { Controller, Get, Post } from '@nestjs/common';
+import { Controller, Get, HttpCode, Post } from '@nestjs/common';
 import { ProxmoxApiService } from './proxmox-api.service';
 import { WolService } from './wol.service';
 
@@ -15,11 +15,13 @@ export class ProxmoxController {
   }
 
   @Post('shutdown')
+  @HttpCode(200)
   shutdown() {
     return this.proxmoxApi.shutdown();
   }
 
   @Post('wake')
+  @HttpCode(200)
   wake() {
     return this.wol.wake();
   }
